@@ -1,28 +1,26 @@
 # ♿ Accessibility Testing Suite
 
+[![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-View%20Workflows-2088FF?logo=githubactions)](https://github.com/Pragati4566/Accessibility-Test-Strategy/actions)
 [![WCAG 2.1 AA](https://img.shields.io/badge/Accessibility-WCAG%202.1%20AA-blue?logo=w3c)](https://www.w3.org/WAI/WCAG21/quickref/)
 [![axe-core](https://img.shields.io/badge/Testing-axe--core-purple)](https://github.com/dequelabs/axe-core)
 [![Playwright](https://img.shields.io/badge/Browser%20Testing-Playwright-green?logo=playwright)](https://playwright.dev/)
 [![TypeScript](https://img.shields.io/badge/Language-TypeScript-3178c6?logo=typescript)](https://www.typescriptlang.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-An automated accessibility testing framework designed to identify usability barriers in an ecommerce application. It combines component-level checks, browser-based accessibility tests, command-line audits, and continuous integration to help detect accessibility issues early in the development lifecycle.
+An automated accessibility testing framework for identifying common accessibility barriers in an ecommerce application. It combines component-level checks, browser-based accessibility tests, command-line audits, and continuous integration to help detect issues early in the development lifecycle.
 
-The framework focuses on making web interfaces more accessible to users with different abilities, including people who rely on keyboards, screen readers, and other assistive technologies.
+The project focuses on accessible forms, keyboard navigation, meaningful page structure, color contrast, and support for users who rely on assistive technologies.
 
 ## Overview
 
-Accessibility should be validated throughout development rather than treated as a final testing step.
-
-This project demonstrates a layered testing approach that helps identify common accessibility problems, including missing labels, incorrect ARIA attributes, insufficient color contrast, and inaccessible navigation.
+Accessibility should be considered throughout development rather than treated as a final testing step. This project demonstrates a layered testing approach for finding common issues such as missing labels, incorrect ARIA attributes, low color contrast, and inaccessible navigation.
 
 ### Key Capabilities
 
 - Automated accessibility checks for reusable UI components.
-- Browser-level accessibility scans across application pages.
+- Browser-based accessibility scans across application pages.
 - Keyboard navigation and form interaction testing.
-- Standalone page audits with structured reports.
-- Automated accessibility checks in a CI pipeline.
+- Command-line audits with structured reports.
+- CI checks that can prevent a pull request from passing when required tests fail.
 - Reusable accessibility patterns for forms, navigation, and interactive elements.
 
 ## Technology Stack
@@ -42,7 +40,7 @@ This project demonstrates a layered testing approach that helps identify common 
 ## Project Structure
 
 ```text
-accessibility-test-suite/
+accessibility-test-strategy/
 ├── .github/
 │   └── workflows/
 │       └── accessibility-ci.yml
@@ -90,6 +88,8 @@ accessibility-test-suite/
 └── package.json
 ```
 
+> Adjust this tree to match the files and folders that are actually present in your repository.
+
 ## Getting Started
 
 ### Prerequisites
@@ -99,7 +99,7 @@ accessibility-test-suite/
 
 ### Installation
 
-Clone your repository and navigate to the project directory.
+Clone your repository and navigate to the project directory. Then install the project dependencies and browser binaries:
 
 ```bash
 npm install
@@ -108,37 +108,37 @@ npx playwright install chromium firefox
 
 ### Running the Tests
 
-Run component-level accessibility tests:
+Run component-level tests:
 
 ```bash
 npm test
 ```
 
-Start the application using a static server:
+Start the static application server in one terminal:
 
 ```bash
 npx serve -s public -l 3000
 ```
 
-In a separate terminal, run browser-based accessibility tests:
+In another terminal, run browser-based accessibility tests:
 
 ```bash
 npm run test:e2e
 ```
 
-Run the standalone accessibility audit:
+Run the command-line accessibility audit:
 
 ```bash
 npm run test:pa11y
 ```
 
-Run the complete test suite:
+Run the complete test suite, if the script is configured in `package.json`:
 
 ```bash
 npm run test:all
 ```
 
-These commands assume the corresponding scripts are defined in `package.json`.
+These commands depend on the scripts and dependencies defined in your `package.json`.
 
 ## Testing Strategy
 
@@ -146,19 +146,19 @@ These commands assume the corresponding scripts are defined in `package.json`.
 
 Component tests use `jest-axe` to check rendered React components for detectable accessibility violations.
 
-The test suite can validate:
+Coverage can include:
 
 - Accessible names and form labels.
 - Label-to-input associations.
-- ARIA properties and error descriptions.
+- ARIA attributes and validation descriptions.
 - Semantic HTML and appropriate roles.
-- Accessibility across default and validation-error states.
+- Default and validation-error states.
 
 Example:
 
 ```tsx
 it('should have no detected accessibility violations', async () => {
-  // Render the component before performing the accessibility scan.
+  // Render the component before running the accessibility scan.
   const { container } = render(<CheckoutForm />);
 
   // Analyse the rendered component.
@@ -171,9 +171,9 @@ it('should have no detected accessibility violations', async () => {
 
 ### 2. End-to-End Accessibility Testing
 
-Playwright tests evaluate accessibility within a running browser. The axe integration checks selected WCAG rules on complete pages and during important user journeys.
+Playwright tests run in a real browser. The axe integration checks selected WCAG rule groups across important pages and user journeys.
 
-Coverage includes:
+Coverage can include:
 
 - Checkout and product-listing workflows.
 - Keyboard navigation and form submission.
@@ -190,75 +190,59 @@ const results = await new AxeBuilder({ page })
   // Analyse the current page.
   .analyze();
 
-// Fail the test when accessibility violations are detected.
+// Fail the test when axe reports accessibility violations.
 expect(results.violations).toEqual([]);
 ```
 
 ### 3. Command-Line Accessibility Auditing
 
-Pa11y provides an additional auditing layer for application pages.
+Pa11y provides an additional auditing layer for configured application pages. Depending on the script configuration, it can:
 
-The audit workflow can:
-
-- Scan configured application URLs.
-- Generate machine-readable JSON reports.
+- Scan selected application URLs.
+- Generate JSON reports.
 - Separate errors, warnings, and notices.
-- Return a non-zero exit code when configured error thresholds are exceeded.
-
-This makes accessibility findings easier to review and incorporate into a development workflow.
+- Return a non-zero exit code when the configured failure threshold is exceeded.
 
 ### 4. Storybook Accessibility Checks
 
-Storybook provides an isolated environment for testing individual UI components.
+Storybook provides an isolated environment for inspecting individual UI components. When configured with the accessibility addon, component stories can be checked for common issues without navigating through the whole application.
 
-When configured with the accessibility addon, component stories can be inspected for common accessibility issues without navigating through the complete application.
-
-This is particularly useful when developing reusable components and reviewing their different states.
+This is useful when developing reusable components and testing their different states.
 
 ## Accessibility Practices
 
 ### Accessible Forms
 
-The checkout interface follows common form-accessibility practices:
-
 - Associate each input with a meaningful label.
 - Identify required fields programmatically.
-- Connect validation messages to their related inputs.
+- Link validation messages to their related inputs.
 - Communicate invalid input states.
-- Use fieldsets and legends to group related controls.
-- Provide suitable autocomplete attributes for supported personal-data fields.
+- Group related controls with `fieldset` and `legend` where appropriate.
+- Use suitable `autocomplete` values for supported personal-data fields.
 
 ### Accessible Navigation
 
-Navigation components are designed around semantic HTML and keyboard access.
-
 - Provide a skip-to-content link.
-- Use meaningful navigation landmarks.
-- Indicate the current page where appropriate.
-- Expose expandable menu state using suitable ARIA attributes.
+- Use semantic navigation landmarks.
+- Identify the current page where appropriate.
+- Expose expandable menu state with suitable ARIA attributes.
 - Ensure interactive elements have visible keyboard focus.
 
 ### Interactive Components
 
-Interactive controls should communicate their purpose and state clearly.
-
-- Provide accessible names for buttons and controls.
-- Represent unavailable or disabled actions appropriately.
+- Give buttons and controls accessible names.
+- Represent unavailable or disabled actions correctly.
 - Announce relevant status and validation updates.
-- Maintain a visible focus indicator.
-- Avoid relying on color alone to communicate important information.
+- Keep keyboard focus visible.
+- Do not rely on color alone to communicate important information.
 
 ### Color Contrast
 
-Color contrast is an important part of visual accessibility.
-
-For typical text, WCAG AA generally requires a contrast ratio of at least **4.5:1**. Large text has a lower minimum requirement.
-
-Contrast should be validated using the actual foreground and background colors in the application rather than inferred from appearance alone.
+Color contrast should be checked using the actual foreground and background colors in the application. WCAG AA generally requires a contrast ratio of at least **4.5:1 for normal text** and **3:1 for large text**.
 
 ## Continuous Integration
 
-The GitHub Actions workflow can run accessibility-related checks automatically when configured for pushes and pull requests.
+The GitHub Actions workflow can run accessibility-related checks automatically on pushes and pull requests when configured in the repository.
 
 A typical validation sequence is:
 
@@ -276,15 +260,11 @@ Component accessibility tests
 Combined CI result
 ```
 
-The pipeline can be configured to fail when required checks fail, helping prevent known accessibility violations from reaching the main branch.
-
-Depending on the workflow configuration, CI artifacts may include test coverage data, browser reports, screenshots, and Pa11y JSON reports.
+The pipeline can be configured to fail when required checks fail. Depending on the workflow configuration, reports may include test coverage, browser output, screenshots, and Pa11y JSON results.
 
 ## Reports and Debugging
 
-When a test fails, review the reported rule, affected HTML element, and suggested remediation.
-
-A useful debugging process is to:
+When a test fails, review the reported rule, the affected HTML element, and the suggested remediation.
 
 1. Identify the failing accessibility rule.
 2. Inspect the affected component or page.
@@ -292,22 +272,17 @@ A useful debugging process is to:
 4. Rerun the relevant test.
 5. Run the broader suite to check for regressions.
 
-This approach helps distinguish genuine application defects from test configuration issues.
-
 ## Limitations
 
-Automated accessibility testing is valuable, but it does not guarantee complete WCAG conformance.
+Automated accessibility testing does not guarantee complete WCAG conformance. Some issues require human judgement or testing with assistive technologies. Manual validation should complement automated scans, including keyboard-only navigation and screen-reader testing with tools such as NVDA, JAWS, or VoiceOver.
 
-Some issues require human judgement or interaction with assistive technology. Manual testing should therefore complement automated scans, including keyboard-only navigation and screen-reader testing with appropriate tools such as NVDA, JAWS, or VoiceOver.
-
-The results should be described as the accessibility checks performed by this framework, rather than as proof of complete accessibility compliance.
+Describe results in terms of the checks actually performed rather than claiming complete accessibility compliance based only on automated tests.
 
 ## References
 
 - [WCAG 2.1 Quick Reference](https://www.w3.org/WAI/WCAG21/quickref/)
 - [axe-core Documentation](https://github.com/dequelabs/axe-core)
 - [ARIA Authoring Practices Guide](https://www.w3.org/WAI/ARIA/apg/)
-- [Playwright Documentation](https://playwright.dev/docs/accessibility-testing)
+- [Playwright Accessibility Testing](https://playwright.dev/docs/accessibility-testing)
 - [Pa11y Documentation](https://pa11y.org/)
 - [jest-axe Documentation](https://github.com/nickcolley/jest-axe)
-
